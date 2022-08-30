@@ -20,6 +20,34 @@ public class MethodParser {
      * @return {@link MethodSignature} object filled with parsed values from source string
      */
     public MethodSignature parseFunction(String signatureString) {
-        throw new UnsupportedOperationException("You should implement this method.");
+        String name, returnType, accessModifier = null;
+        String[] parts = signatureString.split("\\s|\\(|\\)|(, )");
+        MethodSignature methodSignature = null;
+
+        try
+        {
+            //Parse
+            int i = 0;
+            if(parts[i].equals("private") || parts[i].equals("public") || parts[i].equals("protected")) {
+                accessModifier = parts[i];
+                i++;
+            }
+            returnType = parts[i++];
+            name = parts[i++];
+
+            //Create method signature
+            methodSignature = new MethodSignature(name);
+            if(accessModifier != null)
+                methodSignature.setAccessModifier(accessModifier);
+            methodSignature.setReturnType(returnType);
+            for (; i < parts.length; i += 2) {
+                methodSignature.getArguments().add(new MethodSignature.Argument(parts[i], parts[i + 1]));
+            }
+        }
+        catch (ArrayIndexOutOfBoundsException e)
+        {
+            System.err.println("Error: Invalid signature: " + e.getMessage());
+        }
+        return methodSignature;
     }
 }
